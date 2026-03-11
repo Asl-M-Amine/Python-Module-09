@@ -5,12 +5,12 @@ def spell_combiner(spell1: Callable, spell2: Callable) -> Callable:
     if not callable(spell1) or not callable(spell2):
         raise TypeError("spell1 and spell2 must be callable functions")
 
-    def combined_func(target: str) -> Tuple[Callable, Callable]:
+    def combined_spell(target: str) -> Tuple[str, str]:
         s1 = spell1(target)
         s2 = spell2(target)
         return s1, s2
 
-    return combined_func
+    return combined_spell
 
 
 def power_amplifier(base_spell: Callable, multiplier: int) -> Callable:
@@ -19,9 +19,8 @@ def power_amplifier(base_spell: Callable, multiplier: int) -> Callable:
     if not isinstance(multiplier, int):
         raise TypeError("multiplier must be a integer")
 
-    def amplified_spell(*args, **kwargs):
-        result = base_spell(*args, **kwargs)
-
+    def amplified_spell(target: str) -> int:
+        result = base_spell(target)
         return result * multiplier
 
     return amplified_spell
@@ -29,11 +28,11 @@ def power_amplifier(base_spell: Callable, multiplier: int) -> Callable:
 
 def conditional_caster(condition: Callable, spell: Callable) -> Callable:
     if not callable(condition) or not callable(spell):
-        raise TypeError("Both condition and spell must be callable functions")
+        raise TypeError("condition and spell must be callable functions")
 
-    def conditional_spell(*args, **kwargs):
-        if condition(*args, **kwargs):
-            return spell(*args, **kwargs)
+    def conditional_spell(target: str) -> str:
+        if condition(target):
+            return spell(target)
         return "Spell fizzled"
 
     return conditional_spell
@@ -43,18 +42,18 @@ def spell_sequence(spells: list[Callable]) -> Callable:
     if not all(callable(s) for s in spells):
         raise TypeError("All items in spells must be callable functions")
 
-    def sequence(*args, **kwargs):
-        results = [s(*args, **kwargs) for s in spells]
+    def sequence(target: str) -> list[str]:
+        results = [s(target) for s in spells]
         return results
 
     return sequence
 
 
 def main() -> None:
-    def fireball(target: str) -> None:
-        return f"firebell hits {target}"
+    def fireball(target: str) -> str:
+        return f"fireball hits {target}"
 
-    def heal(target: str) -> None:
+    def heal(target: str) -> str:
         return f"heal {target}"
     combined = spell_combiner(fireball, heal)
     res = combined("Dragon")
